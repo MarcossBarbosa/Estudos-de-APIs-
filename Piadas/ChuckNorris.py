@@ -1,6 +1,7 @@
-import  requests
+import requests
 
 base_url = "https://api.chucknorris.io/jokes/random"
+
 
 def piada_aleatoria():
     url = f'{base_url}'
@@ -13,8 +14,6 @@ def piada_aleatoria():
             print('Erro')
     else:
         print(f'Erro: {response.status_code}')
-        
-
 
 
 def exbir_categorias():
@@ -42,12 +41,51 @@ def buscar_piada_por_palavra(categoria):
         print(f'ERRO: {response.status_code}')
 
 
-categoria = exbir_categorias()
-escolha = input('Escolha uma categoria dessas acima: ou digite aleatoria: ').lower().strip()
+def busca_por_texto_livre(query):
+    url = f'https://api.chucknorris.io/jokes/search?query={query}'
+    response = requests.get(url)
+    if response.status_code == 200:
+        dados = response.json()
+        resposta = dados.get('result')
+        if resposta:
+            print(f'Resultado para a {query}:')
+            for i, piada in enumerate(resposta[:5],1):
+                print(f'{i}. {piada["value"]}')
+        else:
+            print('ERRO')
+    else:
+        print(f'ERRO: {response.status_code}')
 
-if escolha in categoria:
-    print(buscar_piada_por_palavra(escolha))
-elif escolha == 'aleatoria':
-    print(piada_aleatoria())
-else:
-    print('ERRO: Não existe essa escolha')
+
+
+
+while True:
+    print('''
+1. Buscar piada por texto
+2. Buscar por categoria
+3. Piada aleatória
+4. Sair ''')
+    try:
+        opcoes = int(input('Digite umas dessas opções: '))
+    except ValueError:
+        print('Digite um numero valido')
+        continue
+
+    if opcoes == 1:
+        texto = input('Digite um texto livre: ')
+        print(busca_por_texto_livre(texto))
+    elif opcoes == 2:
+        categoria = exbir_categorias()
+        escolha = input('Escolha uma categoria dessas acima:').lower().strip()
+        if escolha in categoria:
+            print(buscar_piada_por_palavra(escolha))
+        else:
+            print('ERRO: Não existe essa categoria')
+    elif opcoes == 3:
+        print(piada_aleatoria())
+
+    elif opcoes == 4:
+        print('APP Finalizado!!')
+        break
+    else:
+        print('opção invalida')
